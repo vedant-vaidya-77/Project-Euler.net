@@ -44,42 +44,8 @@ ll getRandomNumber(ll l, ll r) {return uniform_int_distribution<ll>(l, r)(rng);}
  
 /*--------------------------------------------------------------------------------------------------------------------------*/
 
-int cycfinder(int n){
-    if(n == 0){
-        return 0;
-    }
-    unordered_map<int, int> lastposof;
-    int pos = 1; // first num after decimal
-    int num = 1; // numerator
-    while(true){
-        int rem = num%n;
-        if(rem == 0){
-            return 0; // no cycle
-        }
-        if(lastposof[rem] != 0){
-            return pos - lastposof[rem];
-        }
-        lastposof[rem] = pos;
-        pos++;
-        num = rem*10;
-    }
-}
-
 int solve(){
-    // 1%7 = 1
-    // (1*10)%7 = 4
-    // (4*10)%7 = 2
-    // 1 4 2 8 5 7
-    int maxo = 0;
-    int didy = 0;
-    for(int d = 1; d <= 1000; d++){
-        int len = cycfinder(d);
-        if(len >= maxo){
-            maxo = len;
-            didy = d;
-        }
-    }
-    cout << didy << endl;
+    
     return 0;
 }
 
@@ -106,10 +72,10 @@ int32_t main(){
  
     int t;
     t = 1;
-    cin>>t;
     while(t--){
         solve();
     }
     return 0;
 }
+
 
