@@ -44,36 +44,23 @@ ll getRandomNumber(ll l, ll r) {return uniform_int_distribution<ll>(l, r)(rng);}
  
 /*--------------------------------------------------------------------------------------------------------------------------*/
 
-bool isprime(int n){
-    if(n <= 1){
-        return false;
-    }
-    for(int i = 2; i*i <= n; i++){
-        if(n%i == 0){
-            return false;
-        }
-    }
-    return true;
-}
+vector<int> pow5(10);
 
 int solve(){
-    int len = 0;
-    int x = 1000;
-    int aa = 0, bb = 0;
-    for(int a = -x; a < x; a++){
-        for(int b = -x; b <= x; b++){
-            int curlen = 0;
-            while(isprime(curlen*curlen + a*curlen + b)){
-                curlen++;
-            }
-            if(curlen > len){
-                len = curlen;
-                aa = a;
-                bb = b;
-            }
-        }
+	int ans = 0;
+    for(int i = 2; i <= 7*9*9*9*9*9; i++){
+    	int digpowsum = 0;
+    	int num = i;
+    	while(num){
+    		int dig = num%10;
+    		num/=10;
+    		digpowsum += pow5[dig];
+    	}
+    	if(digpowsum == i){
+    		ans += i;
+    	}
     }
-    cout << aa*bb << endl;
+    cout << ans << endl;
     return 0;
 }
 
@@ -97,6 +84,10 @@ int32_t main(){
     freopen("input.txt", "r", stdin);
     freopen("output.txt", "w", stdout);
     #endif
+
+    for(int i = 0; i <= 9; i++){
+    	pow5[i] = i*i*i*i*i;
+    }
  
     int t;
     t = 1;

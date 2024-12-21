@@ -44,36 +44,20 @@ ll getRandomNumber(ll l, ll r) {return uniform_int_distribution<ll>(l, r)(rng);}
  
 /*--------------------------------------------------------------------------------------------------------------------------*/
 
-bool isprime(int n){
-    if(n <= 1){
-        return false;
-    }
-    for(int i = 2; i*i <= n; i++){
-        if(n%i == 0){
-            return false;
-        }
-    }
-    return true;
-}
-
 int solve(){
-    int len = 0;
-    int x = 1000;
-    int aa = 0, bb = 0;
-    for(int a = -x; a < x; a++){
-        for(int b = -x; b <= x; b++){
-            int curlen = 0;
-            while(isprime(curlen*curlen + a*curlen + b)){
-                curlen++;
-            }
-            if(curlen > len){
-                len = curlen;
-                aa = a;
-                bb = b;
-            }
-        }
+    int ans = 1;
+    int n ;
+    cin >> n;
+    for(int cur = 2; cur <= n; cur+=2){
+    	cur++;
+    	int ur = cur*cur;
+    	int ul = ur - (cur-1);
+    	int dl = ul - (cur-1);
+    	int dr = dl - (cur-1);
+    	ans += ur + ul + dl + dr;
+    	cur--;
     }
-    cout << aa*bb << endl;
+    cout << ans << endl;
     return 0;
 }
 
