@@ -44,23 +44,29 @@ ll getRandomNumber(ll l, ll r) {return uniform_int_distribution<ll>(l, r)(rng);}
  
 /*--------------------------------------------------------------------------------------------------------------------------*/
 
-vector<int> pow5(10);
-
 int solve(){
-	int ans = 0;
-    for(int i = 2; i <= 7*9*9*9*9*9; i++){
-    	int digpowsum = 0;
-    	int num = i;
-    	while(num > 0){
-    		int dig = num%10;
-    		num/=10;
-    		digpowsum += pow5[dig];
-    	}
-    	if(digpowsum == i){
-    		ans += i;
+	int n;
+	cin>>n;
+    vector<int> coins(n);
+    for(int i = 0; i < n; i++){
+    	cin>>coins[i];
+    }
+    int target;
+    cin>>target;
+    vector<int> dp(201);
+    // dp[i] -> target i can be achieved in dp[i] ways
+    dp[0] = 1;
+    for(int j = 0; j < coins.size(); j++){
+    	for(int i = 1; i <= 200; i++){
+    		if(i - coins[j] >= 0){
+    			dp[i] = dp[i] + dp[i - coins[j]];
+    		}
     	}
     }
-    cout << ans << endl;
+    for(auto it : dp){
+    	cout << it << " " ;
+    }
+    cout << dp[200] << endl;
     return 0;
 }
 
@@ -84,10 +90,6 @@ int32_t main(){
     freopen("input.txt", "r", stdin);
     freopen("output.txt", "w", stdout);
     #endif
-
-    for(int i = 0; i <= 9; i++){
-    	pow5[i] = i*i*i*i*i;
-    }
  
     int t;
     t = 1;

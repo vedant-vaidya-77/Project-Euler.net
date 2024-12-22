@@ -44,23 +44,65 @@ ll getRandomNumber(ll l, ll r) {return uniform_int_distribution<ll>(l, r)(rng);}
  
 /*--------------------------------------------------------------------------------------------------------------------------*/
 
-vector<int> pow5(10);
-
-int solve(){
-	int ans = 0;
-    for(int i = 2; i <= 7*9*9*9*9*9; i++){
-    	int digpowsum = 0;
-    	int num = i;
-    	while(num > 0){
-    		int dig = num%10;
-    		num/=10;
-    		digpowsum += pow5[dig];
-    	}
-    	if(digpowsum == i){
-    		ans += i;
-    	}
+int solve2() {
+	ll n, k;
+    cin >> n >> k;
+    vector<ll> a(n), b(n);
+    ll max_p = 0;
+    for (ll i = 0; i < n; ++i) {
+        cin >> a[i];
     }
-    cout << ans << endl;
+    for (ll i = 0; i < n; ++i) {
+        cin >> b[i];
+    }
+    for(int i = 0; i < n; i++){
+    	max_p = max(max_p, a[i]);
+    	max_p = max(max_p, b[i]);
+    }
+    vector<tuple<ll, ll, ll>> e;
+    for (ll i = 0; i < n; ++i) {
+        e.push_back({a[i] + 1, -1, +1});
+        e.push_back({b[i] + 1, 0, -1});
+    }
+    sort(e.begin(), e.end(), [](const tuple<ll, ll, ll>& a1, const tuple<ll, ll, ll>& a2) {
+        return get<0>(a1) < get<0>(a2);
+    });
+    ll pos = n, neg = 0, buyers = pos + neg;
+    ll max_rev = 0, last_p = 1;
+    ll max_price = max_p + 2;
+    int idx = 0;
+    if (neg <= k) {
+        ll rev = last_p * buyers;
+        max_rev = max(max_rev, rev);
+    }
+    while (idx < e.size()) {
+        ll p = get<0>(e[idx]);
+        if (p > max_price) break;
+        
+        if (last_p < p) {
+            if (neg <= k && buyers > 0) {
+                ll price = p - 1;
+                ll rev = price * buyers;
+                max_rev = max(max_rev, rev);
+            }
+        }
+        while (idx < e.size() && get<0>(e[idx]) == p) {
+            pos += get<1>(e[idx]);
+            neg += get<2>(e[idx]);
+            ++idx;
+        }
+        buyers = pos + neg;
+        last_p = p;
+    }
+    if (last_p <= max_price) {
+        if (neg <= k && buyers > 0) {
+            ll price = max_price - 1;
+            ll rev = price * buyers;
+            max_rev = max(max_rev, rev);
+        }
+    }
+    
+    cout << max_rev << endl;
     return 0;
 }
 
@@ -84,16 +126,12 @@ int32_t main(){
     freopen("input.txt", "r", stdin);
     freopen("output.txt", "w", stdout);
     #endif
-
-    for(int i = 0; i <= 9; i++){
-    	pow5[i] = i*i*i*i*i;
-    }
  
     int t;
     t = 1;
     cin>>t;
     while(t--){
-        solve();
+        solve2();
     }
     return 0;
 }

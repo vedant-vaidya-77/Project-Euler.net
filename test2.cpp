@@ -44,23 +44,45 @@ ll getRandomNumber(ll l, ll r) {return uniform_int_distribution<ll>(l, r)(rng);}
  
 /*--------------------------------------------------------------------------------------------------------------------------*/
 
-vector<int> pow5(10);
-
-int solve(){
-	int ans = 0;
-    for(int i = 2; i <= 7*9*9*9*9*9; i++){
-    	int digpowsum = 0;
-    	int num = i;
-    	while(num > 0){
-    		int dig = num%10;
-    		num/=10;
-    		digpowsum += pow5[dig];
-    	}
-    	if(digpowsum == i){
-    		ans += i;
-    	}
+pair<ll, ll> can_sell(int price, const vector<int>& a, const vector<int>& b, int n) {
+    ll pos_rev = 0, neg_rev = 0;
+    for (int i = 0; i < n; ++i) {
+        if (price <= a[i]) {
+            pos_rev++;  // Positive review
+        } else if (price <= b[i]) {
+            neg_rev++;  // Negative review
+        }
     }
-    cout << ans << endl;
+    return {pos_rev, neg_rev};
+}
+
+ll max_earnings(int n, int k, const vector<int>& a, const vector<int>& b) {
+    ll left = 1, right = 2 * 1e9;
+    ll result = 0;
+    
+    while (left <= right) {
+        ll mid = (left + right) / 2;
+        auto [pos_rev, neg_rev] = can_sell(mid, a, b, n);
+        
+        if (neg_rev <= k) {
+            result = max(result, pos_rev * mid + neg_rev * mid);  // Maximize earnings
+            left = mid + 1;  // Try higher price
+        } else {
+            right = mid - 1;  // Try lower price
+        }
+    }
+    return result;
+}
+
+int solve() {
+    int n, k;
+    cin >> n >> k;
+    vector<int> a(n), b(n);
+    
+    for (int i = 0; i < n; ++i) cin >> a[i];
+    for (int i = 0; i < n; ++i) cin >> b[i];
+
+    cout << max_earnings(n, k, a, b) << endl;
     return 0;
 }
 
@@ -84,10 +106,6 @@ int32_t main(){
     freopen("input.txt", "r", stdin);
     freopen("output.txt", "w", stdout);
     #endif
-
-    for(int i = 0; i <= 9; i++){
-    	pow5[i] = i*i*i*i*i;
-    }
  
     int t;
     t = 1;
