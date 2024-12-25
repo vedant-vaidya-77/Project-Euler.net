@@ -44,35 +44,33 @@ ll getRandomNumber(ll l, ll r) {return uniform_int_distribution<ll>(l, r)(rng);}
  
 /*--------------------------------------------------------------------------------------------------------------------------*/
 
+vector<int> primo;
+
 int solve(){
-	vector<pair<int, int>> v;
-    for(int i = 10; i <= 99; i++){
-    	for(int j = i+1; j <= 99; j++){
-    		if(i%10 == 0 && j%10 == 0){
-    			continue;
+    int ans = 0;
+    set<int> s;
+    for(auto num : primo){
+    	s.insert(num);
+    }
+    for(auto num : primo){
+    	int mult = 1;
+    	while(num > mult*10){
+    		mult *= 10;
+    	}
+    	int rotated_num = num;
+    	do{
+    		int dig = rotated_num%10;
+    		rotated_num = rotated_num/10;
+    		rotated_num = dig*mult + rotated_num;
+    		if(s.find(rotated_num) == s.end()){
+    			break;
     		}
-    		int up0 = i%10;
-    		int down0 = j%10;
-    		int up1 = i/10;
-    		int down1 = j/10;
-    		if(up0 == down1 && i*down0 == j*up1){
-    			v.pb({up1, down0});
-    		}
+    	}while(rotated_num != num);
+    	if(rotated_num == num){
+    		ans++;
     	}
     }
-    int multnum = 1; 
-    int multd = 1;
-    for(auto it : v){
-    	multnum *= it.ff;
-    	multd *= it.ss;
-    }
-    for(int i = 2; i <= multnum; i++){
-    	while(multnum%i == 0 && multd%i == 0){
-    		multnum /= i;
-    		multd /= i;
-    	}
-    }
-    cout << multd << endl;
+    cout << ans << endl;
     return 0;
 }
 
@@ -96,10 +94,13 @@ int32_t main(){
     freopen("input.txt", "r", stdin);
     freopen("output.txt", "w", stdout);
     #endif
- 
+
     int t;
     t = 1;
     cin>>t;
+    int million;
+    cin>>million;
+ 	primo = sieve(million);
     while(t--){
         solve();
     }

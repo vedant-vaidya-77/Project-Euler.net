@@ -43,48 +43,108 @@ ll phin(ll n) {ll number = n; if (n % 2 == 0) {number /= 2; while (n % 2 == 0) n
 ll getRandomNumber(ll l, ll r) {return uniform_int_distribution<ll>(l, r)(rng);}
  
 /*--------------------------------------------------------------------------------------------------------------------------*/
-
-pair<ll, ll> can_sell(int price, const vector<int>& a, const vector<int>& b, int n) {
-    ll pos_rev = 0, neg_rev = 0;
-    for (int i = 0; i < n; ++i) {
-        if (price <= a[i]) {
-            pos_rev++;  // Positive review
-        } else if (price <= b[i]) {
-            neg_rev++;  // Negative review
-        }
-    }
-    return {pos_rev, neg_rev};
-}
-
-ll max_earnings(int n, int k, const vector<int>& a, const vector<int>& b) {
-    ll left = 1, right = 2 * 1e9;
-    ll result = 0;
-    
-    while (left <= right) {
-        ll mid = (left + right) / 2;
-        auto [pos_rev, neg_rev] = can_sell(mid, a, b, n);
-        
-        if (neg_rev <= k) {
-            result = max(result, pos_rev * mid + neg_rev * mid);  // Maximize earnings
-            left = mid + 1;  // Try higher price
-        } else {
-            right = mid - 1;  // Try lower price
-        }
-    }
-    return result;
-}
-
 int solve() {
-    int n, k;
-    cin >> n >> k;
-    vector<int> a(n), b(n);
-    
-    for (int i = 0; i < n; ++i) cin >> a[i];
-    for (int i = 0; i < n; ++i) cin >> b[i];
+    int n;
+    cin >> n;
+    vector<long long> a(n);
+    int sIdx = -1;
+    bool h1 = false, hM1 = false;
 
-    cout << max_earnings(n, k, a, b) << endl;
+    for (int i = 0; i < n; ++i) {
+        cin >> a[i];
+        if (a[i] == 1) h1 = true;
+        if (a[i] == -1) hM1 = true;
+        if (a[i] != 1 && a[i] != -1) sIdx = i;
+    }
+
+    auto gs = [](const vector<long long>& v) {
+        if (v.empty()) return make_pair(0LL, 0LL);
+        long long mx = v[0], mn = v[0];
+        long long cMx = v[0], cMn = v[0];
+        for (size_t i = 1; i < v.size(); ++i) {
+            cMx = max(v[i], cMx + v[i]);
+            mx = max(mx, cMx);
+            cMn = min(v[i], cMn + v[i]);
+            mn = min(mn, cMn);
+        }
+        return make_pair(mn, mx);
+    };
+
+    vector<pair<long long, long long>> rgs;
+    if (sIdx == -1) {
+        auto [mS, Mx] = gs(a);
+        if (h1 && hM1) {
+            rgs.push_back({mS, Mx});
+        } else if (h1) {
+            rgs.push_back({1, n});
+        } else {
+            rgs.push_back({-n, -1});
+        }
+        rgs.push_back({0, 0});
+    } else {
+        auto ps = [](const vector<long long>& v, bool isPre = true) {
+        if (v.empty()) return make_pair(0LL, 0LL);
+        long long mn = LLONG_MAX, mx = LLONG_MIN, sum = 0;
+
+        if (isPre) {
+            for (long long num : v) {
+                sum += num;
+                mn = min(mn, sum);
+                mx = max(mx, sum);
+            }
+        } else {
+            for (auto it = v.rbegin(); it != v.rend(); ++it) {
+                sum += *it;
+                mn = min(mn, sum);
+                mx = max(mx, sum);
+            }
+        }
+            return make_pair(min(mn, 0LL), max(mx, 0LL));
+        };
+        long long x = a[sIdx];
+        vector<long long> l(a.begin(), a.begin() + sIdx);
+        vector<long long> r(a.begin() + sIdx + 1, a.end());
+        auto [lMn, lMx] = gs(l);
+        auto [rMn, rMx] = gs(r);
+        auto [lMnS, lMxS] = ps(l, false);
+        auto [rMnP, rMxP] = ps(r, true);
+        long long mW = lMnS + x + rMnP;
+        long long MxW = lMxS + x + rMxP;
+        rgs.push_back({lMn, lMx});
+        rgs.push_back({rMn, rMx});
+        rgs.push_back({mW, MxW});
+        rgs.push_back({0, 0});
+    }
+
+    sort(rgs.begin(), rgs.end(), [](const pair<long long, long long>& a, const pair<long long, long long>& b) {
+        return a.first != b.first ? a.first < b.first : a.second < b.second;
+    });
+
+    vector<pair<long long, long long>> mrg;
+    for (const auto& r : rgs) {
+        if (mrg.empty() || mrg.back().second + 1 < r.first) {
+            mrg.push_back(r);
+        } else {
+            mrg.back().second = max(mrg.back().second, r.second);
+        }
+    }
+
+    set<long long> uSums;
+    for (const auto& r : mrg) {
+        for (long long v = r.first; v <= r.second; ++v) {
+            uSums.insert(v);
+        }
+    }
+
+    cout << uSums.size() << endl;
+    for (const long long& v : uSums) {
+        cout << v << " ";
+    }
+    cout << endl;
+
     return 0;
 }
+
 
 /* ------------------------------------------------------------------------
 
@@ -110,6 +170,7 @@ int32_t main(){
     int t;
     t = 1;
     cin>>t;
+    // cout << t << endl;
     while(t--){
         solve();
     }

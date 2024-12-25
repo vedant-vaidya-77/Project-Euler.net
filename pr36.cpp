@@ -44,35 +44,37 @@ ll getRandomNumber(ll l, ll r) {return uniform_int_distribution<ll>(l, r)(rng);}
  
 /*--------------------------------------------------------------------------------------------------------------------------*/
 
+string numtostr(int x, int base)
+{
+  string result;
+  while (x > 0)
+  {
+    auto digit = x % base;
+    x /= base;
+    result.insert(0, 1, char(digit + '0'));
+  }
+  return result;
+}
+
+bool isPalindrome(string s){
+	string rev = s;
+	reverse(s.begin(), s.end());
+	if(rev == s){
+		return true;
+	}
+	return false;
+}
+
+
 int solve(){
-	vector<pair<int, int>> v;
-    for(int i = 10; i <= 99; i++){
-    	for(int j = i+1; j <= 99; j++){
-    		if(i%10 == 0 && j%10 == 0){
-    			continue;
-    		}
-    		int up0 = i%10;
-    		int down0 = j%10;
-    		int up1 = i/10;
-    		int down1 = j/10;
-    		if(up0 == down1 && i*down0 == j*up1){
-    			v.pb({up1, down0});
-    		}
+    int n = 1000000;
+    int sum = 0;
+    for(int i = 1; i < n; i++){
+    	if(isPalindrome(numtostr(i, 10)) && isPalindrome(numtostr(i, 2))){
+    		sum += i;
     	}
     }
-    int multnum = 1; 
-    int multd = 1;
-    for(auto it : v){
-    	multnum *= it.ff;
-    	multd *= it.ss;
-    }
-    for(int i = 2; i <= multnum; i++){
-    	while(multnum%i == 0 && multd%i == 0){
-    		multnum /= i;
-    		multd /= i;
-    	}
-    }
-    cout << multd << endl;
+    cout << sum << endl;
     return 0;
 }
 

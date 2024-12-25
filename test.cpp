@@ -44,65 +44,33 @@ ll getRandomNumber(ll l, ll r) {return uniform_int_distribution<ll>(l, r)(rng);}
  
 /*--------------------------------------------------------------------------------------------------------------------------*/
 
-int solve2() {
-	ll n, k;
-    cin >> n >> k;
-    vector<ll> a(n), b(n);
-    ll max_p = 0;
-    for (ll i = 0; i < n; ++i) {
-        cin >> a[i];
+int solve() {
+    int l, r, g;
+    cin >> l >> r >> g;
+    int k1 = (l + g - 1) / g;
+    int k2 = r / g;
+    if(k1 * g > r){
+        cout << "-1 -1" << endl;
     }
-    for (ll i = 0; i < n; ++i) {
-        cin >> b[i];
-    }
-    for(int i = 0; i < n; i++){
-    	max_p = max(max_p, a[i]);
-    	max_p = max(max_p, b[i]);
-    }
-    vector<tuple<ll, ll, ll>> e;
-    for (ll i = 0; i < n; ++i) {
-        e.push_back({a[i] + 1, -1, +1});
-        e.push_back({b[i] + 1, 0, -1});
-    }
-    sort(e.begin(), e.end(), [](const tuple<ll, ll, ll>& a1, const tuple<ll, ll, ll>& a2) {
-        return get<0>(a1) < get<0>(a2);
-    });
-    ll pos = n, neg = 0, buyers = pos + neg;
-    ll max_rev = 0, last_p = 1;
-    ll max_price = max_p + 2;
-    int idx = 0;
-    if (neg <= k) {
-        ll rev = last_p * buyers;
-        max_rev = max(max_rev, rev);
-    }
-    while (idx < e.size()) {
-        ll p = get<0>(e[idx]);
-        if (p > max_price) break;
-        
-        if (last_p < p) {
-            if (neg <= k && buyers > 0) {
-                ll price = p - 1;
-                ll rev = price * buyers;
-                max_rev = max(max_rev, rev);
+    else
+    {
+        int d = k2 - k1;
+        if(d == 0 && k1 == 1){
+            cout << g << " " << g << "\n";
+            return 0;
+        }
+        while(d)
+        {
+            for(int i=k1; i<=k2-d; i++){
+                if(__gcd(i, d) == 1){
+                    cout << i * g << " " << (i + d) * g << "\n";
+                    return 0;
+                }
             }
+            d--;
         }
-        while (idx < e.size() && get<0>(e[idx]) == p) {
-            pos += get<1>(e[idx]);
-            neg += get<2>(e[idx]);
-            ++idx;
-        }
-        buyers = pos + neg;
-        last_p = p;
+        cout << "-1 -1" << endl;
     }
-    if (last_p <= max_price) {
-        if (neg <= k && buyers > 0) {
-            ll price = max_price - 1;
-            ll rev = price * buyers;
-            max_rev = max(max_rev, rev);
-        }
-    }
-    
-    cout << max_rev << endl;
     return 0;
 }
 
@@ -131,8 +99,7 @@ int32_t main(){
     t = 1;
     cin>>t;
     while(t--){
-        solve2();
+        solve();
     }
     return 0;
 }
-

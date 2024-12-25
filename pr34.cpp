@@ -45,34 +45,21 @@ ll getRandomNumber(ll l, ll r) {return uniform_int_distribution<ll>(l, r)(rng);}
 /*--------------------------------------------------------------------------------------------------------------------------*/
 
 int solve(){
-	vector<pair<int, int>> v;
-    for(int i = 10; i <= 99; i++){
-    	for(int j = i+1; j <= 99; j++){
-    		if(i%10 == 0 && j%10 == 0){
-    			continue;
-    		}
-    		int up0 = i%10;
-    		int down0 = j%10;
-    		int up1 = i/10;
-    		int down1 = j/10;
-    		if(up0 == down1 && i*down0 == j*up1){
-    			v.pb({up1, down0});
-    		}
-    	}
+    int n = 2540160;
+    int res = 0;
+    vector<int> factorial = {1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880};
+    for(int i = 10; i <= n; i++){
+        int sum = 0;
+        int num = i;
+        while(num > 0){
+            sum += factorial[num%10];
+            num /= 10;
+        }
+        if(sum == i){
+            res += i;
+        }
     }
-    int multnum = 1; 
-    int multd = 1;
-    for(auto it : v){
-    	multnum *= it.ff;
-    	multd *= it.ss;
-    }
-    for(int i = 2; i <= multnum; i++){
-    	while(multnum%i == 0 && multd%i == 0){
-    		multnum /= i;
-    		multd /= i;
-    	}
-    }
-    cout << multd << endl;
+    cout << res << endl;
     return 0;
 }
 
