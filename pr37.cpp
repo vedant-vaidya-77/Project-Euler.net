@@ -44,42 +44,39 @@ ll getRandomNumber(ll l, ll r) {return uniform_int_distribution<ll>(l, r)(rng);}
  
 /*--------------------------------------------------------------------------------------------------------------------------*/
 
-string numtostr(int x, int base)
-{
-  string result;
-  while (x > 0)
-  {
-    auto digit = x % base;
-    x /= base;
-    result.insert(0, 1, char(digit + '0'));
-  }
-  return result;
-}
-
-bool isPalindrome(string s){
-	string rev = s;
-	reverse(s.begin(), s.end());
-	if(rev == s){
-		return true;
-	}
-	return false;
-}
-
+vector<int> primo;
 
 int solve(){
-    int n = 1000000;
     int sum = 0;
-    for(int i = 1; i < n; i++){
-    	if(isPalindrome(numtostr(i, 10)) && isPalindrome(numtostr(i, 2))){
-    		sum += i;
+    for(int i = 4; i < primo.size(); i++){
+    	int num = primo[i];
+    	int right = num;
+    	int left = num;
+    	while(right > 0 && (binary_search(primo.begin(), primo.end(), right))){
+    		right/=10;
     	}
+    	if(right != 0){
+    		continue;
+    	}
+    	int shift = 1;
+    	while(shift*10 <= left){
+    		shift *= 10;
+    	}
+    	while(left > 0 && (binary_search(primo.begin(), primo.end(), left))){
+    		left %= shift;
+    		shift /= 10;
+    	}
+    	if(left!=0){
+    		continue;
+    	}
+    	sum += primo[i];
     }
     cout << sum << endl;
     return 0;
 }
 
 /* ------------------------------------------------------------------------
-   
+
 chad_set A -> *A.find_by_order(x) gives index of x
 A.order_of_key(x) gives no. of elems smaller than x
 __builtin_clz(x): the number of zeros at the beginning of the number 
@@ -87,7 +84,7 @@ __builtin_ctz(x): the number of zeros at the end of the number
 __builtin_popcountll(x): the number of ones in the number
 __builtin_parity(x): the parity (even or odd) of the number of ones
 __builtin_ffs(int) finds the index of the first (most right) set bit
-
+ 
 -------------------------------------------------------------------------*/
 
 int32_t main(){
@@ -98,6 +95,9 @@ int32_t main(){
     freopen("input.txt", "r", stdin);
     freopen("output.txt", "w", stdout);
     #endif
+
+    int mili = 1000000;
+    primo = sieve(mili);
  
     int t;
     t = 1;
